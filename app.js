@@ -7,7 +7,7 @@ const express = require('express')
 const socket = require('socket.io')
 
 // import Node.js module
-// const http = require('http')
+const http = require('http')
 
 // import fs module
 const fs = require('fs')
@@ -18,8 +18,9 @@ const app = express()
 // create express http server
 const server = http.createServer(app)
 
+
 // binding server to socket.io
-const io = socket(server);
+const io = socket(server)
 
 // use Middleware for static
 app.use('/css',express.static('./static/css'))
@@ -36,6 +37,39 @@ app.get('/',function(request,response) {
 			response.write(data)
 			response.end()
 		}
+	})
+})
+
+io.sockets.on('connection', function(socket) {
+
+	//if new user connects, alert other users
+	socket.on('newUser', function(name) {
+		console.log(name + ' 님이 접속하였습니다')
+
+		// store name into socket
+		socket.name = name
+
+		// send all socket
+		io.sockets.emit('update', {type: 'connect', name: 'SERVER', message: name + ' 님이 접속하였습니다'})
+	}) 
+
+	//get message
+	socket.on('message', function(data) {
+		// add name to message data
+		data.name = socket.name
+
+		console.log(data)
+
+		// send message to all user without sender
+		socket.broadcast.emit('update', data)
+	})
+
+	// exit access
+	socket.on('disconnect', function() {
+		console.log(socket.name + ' 님이 나가셨습니다')
+
+		// send message to all user without exit user
+		socket.broadcast.emit('update', {type: 'disconnect', name: 'SERVER', message: socket.name + ' 님이 나가셨습니다'})
 	})
 })
 
