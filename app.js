@@ -50,7 +50,7 @@ io.sockets.on('connection', function(socket) {
 		socket.name = name
 
 		// send all socket
-		io.sockets.emit('update', {type: 'connect', name: 'SERVER', message: name + ' 님이 접속하였습니다'})
+		io.sockets.emit('update', {type: 'connect', name: 'SERVER', message: name + ' ACCESSING···'})
 	}) 
 
 	//get message
@@ -69,7 +69,7 @@ io.sockets.on('connection', function(socket) {
 		console.log(socket.name + ' 님이 나가셨습니다')
 
 		// send message to all user without exit user
-		socket.broadcast.emit('update', {type: 'disconnect', name: 'SERVER', message: socket.name + ' 님이 나가셨습니다'})
+		socket.broadcast.emit('update', {type: 'disconnect', name: 'SERVER', message: socket.name + ' EXIT···'})
 	})
 })
 
